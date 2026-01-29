@@ -1,0 +1,22 @@
+__include__: [
+  '../dataset/coco_detection.yml',
+  '../runtime_savebest.yml',
+  './include/dataloader.yml',
+  './include/optimizer.yml',
+  './include/rtdetr_r50vd.yml',
+]
+
+output_dir: ./output/rtdetr_r101vd_6x_plantdoc
+num_classes: 13
+train_dataloader:
+  dataset:
+    img_folder: /root/autodl-tmp/PlantDoc_coco/train2017
+    ann_file: /root/autodl-tmp/PlantDoc_coco/annotations/instances_train2017.json
+
+val_dataloader:
+  dataset:
+    img_folder: /root/autodl-tmp/PlantDoc_coco/val2017
+    ann_file: /root/autodl-tmp/PlantDoc_coco/annotations/instances_val2017.json
+
+PResNet:
+  depth: 101

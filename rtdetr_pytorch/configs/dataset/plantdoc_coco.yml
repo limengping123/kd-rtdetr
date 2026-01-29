@@ -1,0 +1,4 @@
+__include__:
+  - ./coco_detection.yml
+
+num_classes: 13

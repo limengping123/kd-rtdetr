@@ -1,0 +1,35 @@
+__include__:
+  - ../dataset/coco_detection.yml
+  - ../runtime/save_best.yml
+  - ../include/dataloader.yml
+  - ../include/optimizer.yml
+
+# ================= student =================
+model: rtdetr_r18          #  student
+
+# ================= teacher =================
+teacher:
+  model: rtdetr_r50vd      # teacher
+  pretrained: true
+  weights: checkpoints/rtdetr_r50vd_6x_coco.pth
+
+# ================= distillation =================
+distill:
+  enable: false
+  type: logits            
+  temperature: 4.0
+  alpha: 0.5
+
+# ================= dataset =================
+output_dir: ./output/rtdetr_r18_r50_kd_plantdoc
+num_classes: 13
+
+train_dataloader:
+  dataset:
+    img_folder: /root/autodl-tmp/PlantDoc_coco/train2017
+    ann_file: /root/autodl-tmp/PlantDoc_coco/annotations/instances_train2017.json
+
+val_dataloader:
+  dataset:
+    img_folder: /root/autodl-tmp/PlantDoc_coco/val2017
+    ann_file: /root/autodl-tmp/PlantDoc_coco/annotations/instances_val2017.json

@@ -1,0 +1,78 @@
+
+__include__: [
+  '../dataset/coco_detection.yml',
+  '../runtime.yml',
+  './include/dataloader.yml',
+  './include/optimizer.yml',
+  './include/rtdetr_r50vd.yml',
+]
+
+
+output_dir: ./output/rtdetr_r18vd_6x_coco
+
+PResNet:
+  depth: 18
+  freeze_at: -1
+  freeze_norm: False
+  pretrained: True
+
+HybridEncoder:
+  in_channels: [128, 256, 512]
+  hidden_dim: 256
+  expansion: 0.5
+
+
+RTDETRTransformer:
+  eval_idx: -1
+  num_decoder_layers: 3
+  num_denoising: 100
+
+
+
+optimizer:
+  type: AdamW
+  params: 
+    - 
+      params: '^(?=.*backbone)(?=.*norm).*$'
+      lr: 0.0002
+      weight_decay: 0.
+    - 
+      params: '^(?=.*backbone)(?!.*norm).*$'
+      lr: 0.00001
+    - 
+      params: '^(?=.*(?:encoder|decoder))(?=.*(?:norm|bias)).*$'
+      weight_decay: 0.
+
+  lr: 0.0001
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+# ======================
+# Override for PlantDoc (COCO style)
+# ======================
+num_classes: 13
+
+load_from: null
+resume_from: null
+
+train_dataloader:
+  batch_size: 16
+  num_workers: 4
+  dataset:
+    type: CocoDetection
+    img_folder: /root/autodl-tmp/PlantDoc_coco/train2017
+    ann_file: /root/autodl-tmp/PlantDoc_coco/annotations/instances_train2017.json
+    remap_mscoco_category: true
+
+val_dataloader:
+  batch_size: 2
+  num_workers: 2
+  dataset:
+    type: CocoDetection
+    img_folder: /root/autodl-tmp/PlantDoc_coco/val2017
+    ann_file: /root/autodl-tmp/PlantDoc_coco/annotations/instances_val2017.json
+    remap_mscoco_category: true
+
+evaluator:
+  type: CocoEvaluator
+  ann_file: /root/autodl-tmp/PlantDoc_coco/annotations/instances_val2017.json
